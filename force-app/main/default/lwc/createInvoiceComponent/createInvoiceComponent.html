@@ -1,0 +1,343 @@
+<!--
+  @description       : 
+  @author            : ChangeMe
+  @group             : 
+  @last modified on  : 10-21-2024
+  @last modified by  : ChangeMe
+-->
+<template>
+    <lightning-card title="New XERO Invoice" icon-name="action:quote">
+
+        <!-- Loading Spinner Template -->
+        <template if:true={showSpinner}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>
+
+        <!-- Progress Bar -->
+        <div class="slds-p-around_medium">
+            <lightning-progress-indicator current-step={currentStep} type="path">
+                <lightning-progress-step label="Opportunity" value="1" class={stepOneClass} data-id="firstStep"
+                    onclick={handleStepBarChange}></lightning-progress-step>
+                <lightning-progress-step label="Select Xero Contact" value="2" class={stepTwoClass} data-id="secondStep"
+                    onclick={handleStepBarChange}></lightning-progress-step>
+                <lightning-progress-step label="Invoice Generation" value="3" class={stepThreeClass} data-id="thirdStep"
+                    onclick={handleStepBarChange}></lightning-progress-step>
+            </lightning-progress-indicator>
+        </div>
+
+
+        <div class="slds-p-around_medium">
+
+            <!-- Opportunity Detail Page     -->
+            <template if:true={firstPage}>
+                <div class="slds-var-m-around_medium">
+                    <h2> Opportunity</h2>
+
+                    <strong> Name: </strong> {oppRecordName}
+                    </br></br>
+
+                    <strong> Account: </strong>
+
+                    <p onclick={handleOnOppAccIdClick}
+                        style="color: #0070d2; text-decoration:underline; cursor: pointer;">
+                        {oppAccountName}
+                    </p>
+                </div>
+
+                <div class="slds-var-m-around_medium">
+                    <h2> Existing Invoice(s) on This Opportunity</h2>
+                    </br>
+                    <template if:true={opportunityExistingInvoiceRecords}>
+                        <template for:each={opportunityExistingInvoiceRecords} for:item="invoice">
+                            <p key={invoice.Id} onclick={navigateToInvoiceRecord} data-id={invoice.id}
+                                style="color: #0070d2; text-decoration:underline; cursor: pointer;">
+                                {invoice.name}
+                            </p>
+                        </template>
+                    </template>
+                    <template if:false={opportunityExistingInvoiceRecords}>
+                        <p>No Existing invoices found</p>
+                    </template>
+                </div>
+                <div class="slds-var-m-around_medium">
+                    <h2> Create Invoice using Opportunity Products</h2>
+                    </br>
+                    <label>
+                        <lightning-input type="radio" label="Create Blank Invoice" data-id="BlankInvoice"
+                            onclick={handleInvoiceTypeRadioChange}
+                            checked={isRadioBlankInvoiceChecked}></lightning-input>
+
+                    </label>
+                    </br>
+                    <label>
+                        <lightning-input type="radio" label="Populate Invoice with Opportunity Products" data-id="InvoiceWithOppProducts"
+                            onclick={handleInvoiceTypeRadioChange} checked={isRadioOppProductChecked}
+                            disabled={isAutoOppProductPopulationDisabled}></lightning-input>
+
+                    </label>
+                </div>
+
+
+            </template>
+
+            <!-- Contact Details Page  -->
+            <template if:true={secondPage}>
+
+                <div class="slds-var-m-around_medium">
+                    <h2> Map Xero Contact Details and Salesforce Detail</h2>
+                    </br>
+                    <label>
+                        <lightning-input type="radio" label="Create a New Xero Contact" data-id="NewContact"
+                            onclick={handleContactTypeRadioChange} checked={isRadioCreateContactChecked}>
+                        </lightning-input>
+
+                    </label>
+                    </br>
+                    <label>
+                        <lightning-input type="radio" label="Use the Below existing Xero Contact" data-id="ExistingContact"
+                            onclick={handleContactTypeRadioChange} checked={isRadioExistingChecked}
+                            disabled={isXeroContactDisabled}></lightning-input>
+                        <div class="slds-var-m-around_medium">
+                            <template if:true={xeroContactRelatedToAccount}>
+                                <template for:each={xeroContactRelatedToAccount} for:item="contact">
+                                    <lightning-icon icon-name="standard:employee_contact" size="small"
+                                        key={contact.Id}></lightning-icon>
+                                    &nbsp; Contact Name: {contact.First_Name__c}
+                                    &nbsp; &nbsp; <p key={contact.Id} style="margin-left: 10px;">Contact Email:
+                                        {contact.Email_Address__c}</p>
+
+                                </template>
+                            </template>
+                            <template if:false={xeroContactRelatedToAccount}>
+                                No Contacts
+                            </template>
+                        </div>
+
+                    </label>
+
+                    <template if:true={contactRecordPage}>
+                        <c-xero-contact-creation-component accountdata={accountdata}
+                            ongetcontactdetails={primaryContactDetails}></c-xero-contact-creation-component>
+
+                    </template>
+                    <template if:true={buttonPage}>
+
+                    </template>
+                </div>
+
+            </template>
+
+            <!-- Invoice Creation Page  -->
+            <template if:true={thirdPage}>
+
+                <div class="slds-var-m-around_medium">
+                    <h2> Invoice Details</h2>
+                    </br>
+                    <lightning-layout>
+                        <lightning-layout-item size="6">
+                            <strong>To: </strong>
+                            </br>
+                            <p>{oppAccountName}</p>
+                            <p>{oppAccountAddressData.Street}</p>
+                            <p>{oppAccountAddressData.City}</p>
+                            <p>{oppAccountAddressData.Country}</p>
+                            <p>{oppAccountAddressData.PostalCode}</p>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="6">
+                            <strong>Primary Contact: </strong>
+                            </br>
+                            <p>{primaryContactFirstName} {primaryContactLastName}</p>
+                            <p>{primaryContactEmail}</p>
+                        </lightning-layout-item>
+                    </lightning-layout>
+
+                    <lightning-layout>
+                        <lightning-layout-item size="6">
+
+
+                            <lightning-combobox name="Invoice Template" label="Invoice Template"
+                                placeholder="--Select Invoice Template--" options={invoiceTemplates}
+                                value={invoiceTemplateValue} onchange={handleChangeOnInvoiceTemplates}
+                                class="validate leftSideInputFields">
+                            </lightning-combobox>
+                            <lightning-input label="Reference" value={referenceValue}
+                                onchange={handleChangeInvoiceReference} type="text" variant="standard"
+                                class="validate leftSideInputFields">
+                            </lightning-input>
+
+                            <lightning-combobox name="Currency" label="Currency" placeholder="--Select Currency--"
+                                value={invoiceCurrencyValue} options={currencyOptions}
+                                onchange={handleChangeInvoiceCurrency} class="validate leftSideInputFields">
+                            </lightning-combobox>
+
+                        </lightning-layout-item>
+
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                        <lightning-layout-item size="6">
+                            <lightning-input label="Invoice Date" type="date" variant="standard"
+                                class="validate rightSideInputFields" date-style="short" value={invoiceDateValue}
+                                onchange={handleChangeInvoiceDate}>
+                            </lightning-input>
+                            <lightning-input label="Invoice Due Date" type="date" variant="standard"
+                                class="validate rightSideInputFields" date-style="short" value={invoiceDueDateValue}
+                                onchange={handleChangeInvoiceDueDate}>
+                            </lightning-input>
+                            <lightning-combobox label="Amounts are" value={invoiceAmountsAreValue}
+                                placeholder="--Select Amount--" options={amountsAreDropDownValue}
+                                onchange={handleChangeInvoiceAmountsAre} class="validate rightSideInputFields">
+                            </lightning-combobox>
+
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+
+                <div>
+                    <!-- <lightning-card> -->
+                    <div class="slds-p-around_medium">
+                        <table class="slds-table slds-table_cell-buffer" style="background-color: white;">
+                            <thead style="background-color: white;">
+                                <tr style="background-color: white;">
+                                    <th scope="col" style="background-color: white; ">
+                                        <div class="slds-truncate" title="Item" style="background-color: white; ">
+                                            Item</div>
+                                    </th>
+                                    <th scope="col" style="background-color: white;">
+                                        <div class="slds-truncate" title="Description" style="background-color: white;">
+                                            Description</div>
+                                    </th>
+                                    <th scope="col" style="background-color: white;">
+                                        <div class="slds-truncate" title="Quantity" style="background-color: white;">
+                                            Quantity</div>
+                                    </th>
+                                    <th scope="col" style="background-color: white;">
+                                        <div class="slds-truncate" style="background-color: white;" title="Unit Price">
+                                            Unit Price</div>
+                                    </th>
+                                    <th scope="col" style="background-color: white;">
+                                        <div class="slds-truncate" title="Discount" style="background-color: white;">
+                                            Discount</div>
+                                    </th>
+                                    <th scope="col" style="background-color: white;">
+                                        <div class="slds-truncate" title="Account" style="background-color: white;">
+                                            Account</div>
+                                    </th>
+                                    <th scope="col" style="background-color: white;">
+                                        <div class="slds-truncate" title="Tax Rate" style="background-color: white;">Tax
+                                            Rate</div>
+                                    </th>
+                                    <!-- <th scope="col" style="background-color: white;">
+                                                <div class="slds-truncate" title="Region"
+                                                    style="background-color: white;">Region</div>
+                                            </th> -->
+                                    <th scope="col" style="background-color: white;">
+                                        <div class="slds-truncate" title="Amount" style="background-color: white;">
+                                            Amount</div>
+                                    </th>
+                                    <th scope="col" style="background-color: white;">
+                                        <div class="slds-truncate" title="Actions" style="background-color: white;">
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={invoiceItems} for:item="item">
+                                    <tr key={item.id}>
+                                        <td>
+                                            <lightning-input type="search" data-id={item.id} value={item.Name}
+                                                onchange={handleChange} class="slds-truncate"></lightning-input>
+
+                                            <template if:true={isLoaded}>
+                                                <template if:true={item.isDropdownVisible}>
+                                                    <div class="searchList">
+                                                        <ul class="dropdown-list">
+                                                            <div>
+                                                                <template for:each={filteredProducts} for:item="option">
+                                                                    <li key={option.Id} data-id={option.Id}
+                                                                        onclick={handleSelectedProduct}>
+                                                                        {option.Name}
+                                                                    </li>
+                                                                </template>
+                                                            </div>
+                                                        </ul>
+                                                    </div>
+                                                </template>
+                                            </template>
+                                        </td>
+                                        <td>
+                                            <lightning-input data-id={item.id} value={item.Description}
+                                               data-name="Description" onchange={handleChange} class="slds-truncate"></lightning-input>
+                                        </td>
+                                        <td>
+                                            <lightning-input type="number" data-id={item.id}
+                                                data-name="Quantity" value={item.Quantity}
+                                                onchange={handleChange} class=" slds-truncate"></lightning-input>
+                                        </td>
+                                        <td>
+                                            <lightning-input type="number" data-id={item.id} value={item.UnitPrice}
+                                               data-name="UnitPrice" onchange={handleChange} class=" slds-truncate"></lightning-input>
+                                        </td>
+                                        <td>
+                                            <lightning-input type="number" data-id={item.id} value={item.Discount}
+                                                data-name="Discount" onchange={handleChange} class=" slds-truncate"></lightning-input>
+                                        </td>
+                                        <td>
+                                            <lightning-combobox data-id={item.id} value={item.AccountCode}
+                                                data-name="AccountCode" onchange={handleChange} options={accountCodeOptions} class="slds-truncate"></lightning-combobox>
+                                        </td>
+                                        <td>
+                                            <lightning-combobox data-id={item.id} value={item.TaxType}
+                                               data-name="TaxType" options={taxRateOptions} onchange={handleChange}></lightning-combobox>
+                                        </td>
+                                        <!-- <td>
+                                                    <lightning-combobox data-id={item.id} value={item.region}
+                                                        options={regionOptions}
+                                                        onchange={handleChange}></lightning-combobox>
+                                                </td> -->
+                                        <td>
+                                            <lightning-input type="number" data-id={item.id} value={item.LineAmount}
+                                               data-name="LineAmount" class="slds-truncate"></lightning-input>
+                                        </td>
+                                        <td style="margin-top:-2rem">
+                                            <lightning-button-icon variant="brand" icon-name="utility:delete"
+                                                class="slds-truncate" alternative-text="Delete" onclick={handleDelete}
+                                                data-id={item.id} style="margin-top:-2rem"></lightning-button-icon>
+                                        </td>
+                                    </tr>
+                                </template>
+                            </tbody>
+
+                        </table>
+
+                        <lightning-button variant="brand" icon-name="utility:add"
+                            onclick={handleAddItem}></lightning-button>
+
+                    </div>
+                    <!-- </lightning-card> -->
+                </div>
+
+
+            </template>
+
+            <!-- Footer  -->
+            <div slot="footer">
+                <div class="slds-align_absolute-center">
+                    <lightning-button variant="brand" label={cancelButton} title="Primary action"
+                        onclick={handleClickOnCancel} class="slds-m-left_x-small"></lightning-button>
+
+                    <!-- Previous Button  -->
+                    <template if:false={firstPage}>
+                        <lightning-button variant="brand" label={previousButton} title="Primary action"
+                            disabled={hidePreviousButton} onclick={handleClickOnInvoicePrevious}
+                            class="slds-m-left_x-small"></lightning-button>
+                    </template>
+
+                    <!-- Next Button  -->
+                    <lightning-button variant="brand" label={nextButton} title="Primary action"
+                        disabled={hideNextButton} onclick={handleClickOnSubmitOrNext}
+                        class="slds-m-left_x-small"></lightning-button>
+                </div>
+            </div>
+        </div>
+    </lightning-card>
+</template>

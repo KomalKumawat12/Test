@@ -1,0 +1,70 @@
+h2 {
+  background-color: rgb(233, 232, 232);
+}
+.active-step {
+  background-color: rgb(
+    36,
+    36,
+    107
+  ); /* Dark blue background for active steps */
+  color: white !important; /* White text for active steps */
+}
+
+.slds-progress__marker {
+  background-color: green !important; /* Make the marker green */
+  border-color: green !important; /* Ensure the border is green as well */
+}
+
+/* Target the path of the completed steps to ensure they are green */
+.lightning-progress-step[data-complete="true"] .slds-path__link,
+.lightning-progress-step[data-complete="true"] .slds-progress__marker,
+.lightning-progress-step[data-complete="true"] .slds-path__item,
+.lightning-progress-step[data-complete="true"] .slds-progress__item_content {
+  background-color: green !important; /* Green background */
+  color: white !important; /* White text and icon color */
+}
+
+/* Ensures checkmark icons are visible */
+.slds-progress__marker_icon {
+  fill: white !important; /* White checkmark on a green background */
+}
+
+/* Style for the active step (the one you're on) */
+.slds-path__item.slds-is-active .slds-path__link {
+  background-color: blue !important; /* Blue for the active step */
+  color: white !important;
+}
+
+/* Customize the upcoming steps (future steps) */
+.slds-path__item:not(.slds-is-complete):not(.slds-is-active) .slds-path__link {
+  background-color: rgb(
+    233,
+    232,
+    232
+  ) !important; /* Grey background for future steps */
+}
+
+/*Style Product dropdown on third Page*/
+.dropdown-list {
+  border: 1px solid #f9f4f4;
+  max-height: 200px;
+  overflow-y: auto;
+  position: absolute;
+  background-color: white;
+  width: 100%;
+  z-index: 1;
+}
+
+.dropdown-list li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.dropdown-list li:hover {
+  background-color: #f0f0f0;
+}
+
+.searchList{
+  position: relative;
+  z-index: 3;
+}

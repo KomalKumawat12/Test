@@ -1,0 +1,362 @@
+<template>
+  <lightning-card>
+    <div class="slds-var-m-around_medium" style="border: 2px solid grey">
+      <lightning-layout
+        style="background-color: skyblue; height: 50px"
+        class="slds-p-horizontal_small"
+      >
+        <lightning-layout-item size="4"> </lightning-layout-item>
+        <lightning-layout-item size="4">
+          <center style="padding-top: 15px">
+            <strong>From Salesforce Contact</strong>
+          </center>
+        </lightning-layout-item>
+        <lightning-layout-item size="4">
+          <center style="padding-top: 15px">
+            <strong>New Xero Contact</strong>
+          </center>
+        </lightning-layout-item>
+      </lightning-layout>
+      <div
+        style="
+          background-color: rgb(206, 201, 201);
+          height: 50px;
+          padding-left: 20px;
+          padding-top: 15px;
+        "
+      >
+        Contact Details:
+      </div>
+
+      <lightning-layout class="slds-p-horizontal_small">
+        <lightning-layout-item size="4">
+          <div style="height: 50px; margin-top: 15px">
+            <strong>Salesforce Contact</strong>
+          </div>
+        </lightning-layout-item>
+        <lightning-layout-item size="4">
+          <lightning-combobox
+            value={salesforceContactInsertionValue}
+            options={salesforceContactOptions}
+            onchange={handleChangeSalesforceContact}
+          >
+          </lightning-combobox>
+        </lightning-layout-item>
+      </lightning-layout>
+
+      <template if:true={xeroContactDetailsValue}>
+        <lightning-layout class="slds-p-horizontal_small">
+          <lightning-layout-item size="4">
+            <div style="height: 50px; margin-top: 5px">
+              <strong>First Name</strong>
+            </div>
+            <div style="height: 50px"><strong>Last Name</strong></div>
+            <div style="height: 50px; margin-bottom: 10px">
+              <strong>Email</strong>
+            </div>
+          </lightning-layout-item>
+          <lightning-layout-item size="4">
+            <lightning-input
+              value={xeroContactFirstName}
+              name="contactFirstName"
+              onchange={handleContactDetailValues}
+              type="text"
+              variant="standard"
+              disabled="true"
+            >
+            </lightning-input>
+            <lightning-input
+              value={xeroContactLastName}
+              name="contactLastName"
+              onchange={handleContactDetailValues}
+              type="text"
+              variant="standard"
+              disabled="true"
+            >
+            </lightning-input>
+            <lightning-input
+              value={xeroContactEmailAddress}
+              name="contactEmail"
+              placeholder="Enter Email Address"
+              onchange={handleContactDetailValues}
+              type="text"
+              variant="standard"
+              style="margin-bottom: 10px"
+              disabled="true"
+            >
+            </lightning-input>
+          </lightning-layout-item>
+
+          <lightning-layout-item size="4">
+            <lightning-input
+              value={xeroContactFirstName}
+              onchange={handleContactDetailValues}
+              type="text"
+              variant="standard"
+              style="margin-left: 15px"
+            >
+            </lightning-input>
+            <lightning-input
+              value={xeroContactLastName}
+              onchange={handleContactDetailValues}
+              type="text"
+              variant="standard"
+              style="margin-left: 15px"
+            >
+            </lightning-input>
+            <lightning-input
+              value={xeroContactEmailAddress}
+              onchange={handleContactDetailValues}
+              type="text"
+              variant="standard"
+              style="margin-left: 15px; margin-bottom: 10px"
+            >
+            </lightning-input>
+          </lightning-layout-item>
+        </lightning-layout>
+      </template>
+
+      <template for:each={contactPersonsList} for:item="xeroContact">
+        <div
+          key={xeroContact.Id}
+          class="slds-border_bottom slds-border_top slds-p-horizontal_small"
+          style="padding-bottom: 10px"
+        >
+          <lightning-layout key={xeroContact.Id}>
+            <lightning-layout-item size="4" style="margin-top: 10px">
+              <lightning-button
+                variant="destructive"
+                label="Remove"
+                name="Remove"
+                onclick={handleRemoveContactPersons}
+                data-id={xeroContact.Id}
+              >
+              </lightning-button>
+            </lightning-layout-item>
+            <lightning-layout-item size="4" style="margin-top: 10px">
+              <lightning-input
+                label="First Name"
+                type="text"
+                name="contactPersonFirstName"
+                data-id={xeroContact.Id}
+                onchange={handleContactPersonDeatils}
+                value={xeroContact.FirstName}
+              >
+              </lightning-input>
+              <lightning-input
+                label="Email Address"
+                type="text"
+                name="contactPersonEmailAddress"
+                data-id={xeroContact.Id}
+                onchange={handleContactPersonDeatils}
+                style="margin-top: 10px"
+                value={xeroContact.EmailAddress}
+              >
+              </lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="4" style="margin-top: 10px">
+              <lightning-input
+                label="Last Name"
+                type="text"
+                data-id={xeroContact.Id}
+                name="contactPersonLastName"
+                onchange={handleContactPersonDeatils}
+                value={xeroContact.LastName}
+                style="margin-left: 15px"
+              >
+              </lightning-input>
+              <lightning-input
+                label="Include In Emails"
+                type="checkbox"
+                name="contactPersonIncludeInEmails"
+                data-id={xeroContact.Id}
+                onchange={handleContactPersonDeatils}
+                value={xeroContact.IncludeInEmails}
+                style="margin-left: 15px; margin-top: 30px"
+              ></lightning-input>
+            </lightning-layout-item>
+          </lightning-layout>
+        </div>
+      </template>
+
+      <template if:true={addMoreContactPersonsButton}>
+        <div style="margin-left: 380px; margin-bottom: 10px; margin-top: 10px">
+          <lightning-button
+            variant="brand"
+            label="Add More Contact Persons"
+            onclick={addMoreXeroContactPersons}
+            disabled={addMoreContactPersonButtonDisabled}
+          >
+          </lightning-button>
+        </div>
+      </template>
+
+      <div
+        style="
+          background-color: rgb(206, 201, 201);
+          height: 50px;
+          padding-left: 20px;
+          padding-top: 15px;
+        "
+      >
+        Account Details:
+      </div>
+      <lightning-layout class="slds-p-horizontal_small">
+        <lightning-layout-item size="4">
+          <div style="height: 50px; margin-top: 15px">
+            <strong>Account Number</strong>
+          </div>
+          <div style="height: 50px"><strong>Account Name</strong></div>
+          <div style="height: 50px"><strong>Street Address</strong></div>
+          <div style="height: 50px"><strong>City</strong></div>
+          <div style="height: 50px"><strong>State</strong></div>
+          <div style="height: 50px"><strong>Postal/Zip Code</strong></div>
+          <div style="height: 50px"><strong>Country</strong></div>
+          <div style="height: 50px"><strong>Account Phone</strong></div>
+        </lightning-layout-item>
+        <lightning-layout-item size="4">
+          <lightning-input
+            value={accountNumber}
+            name="AccountNumber"
+            onchange={handleAccountDetails}
+            type="text"
+            variant="standard"
+            disabled="true"
+          >
+          </lightning-input>
+          <lightning-input
+            value={accountName}
+            onchange={handleAccountDetails}
+            type="text"
+            variant="standard"
+            disabled="true"
+          >
+          </lightning-input>
+          <lightning-input
+            value={accountStreetAddress}
+            onchange={handleAccountDetails}
+            type="text"
+            variant="standard"
+            disabled="true"
+          >
+          </lightning-input>
+          <lightning-input
+            value={accountAddressCity}
+            onchange={handleAccountDetails}
+            type="text"
+            variant="standard"
+            disabled="true"
+          >
+          </lightning-input>
+          <lightning-input
+            value={accountAddressState}
+            onchange={handleAccountDetails}
+            type="text"
+            variant="standard"
+            disabled="true"
+          >
+          </lightning-input>
+          <lightning-input
+            value={accountAddressPostalCode}
+            onchange={handleAccountDetails}
+            type="text"
+            variant="standard"
+            disabled="true"
+          >
+          </lightning-input>
+          <lightning-input
+            value={accountAddressCountry}
+            onchange={handleAccountDetails}
+            type="text"
+            variant="standard"
+            disabled="true"
+          >
+          </lightning-input>
+          <lightning-input
+            value={accountPhone}
+            onchange={handleAccountDetails}
+            type="text"
+            variant="standard"
+            disabled="true"
+          >
+          </lightning-input>
+        </lightning-layout-item>
+
+        <lightning-layout-item size="4">
+          <lightning-input
+            value={xeroAccountNumber}
+            style="margin-left: 15px"
+            name="xeroAccountNumber"
+            onchange={handleXeroAccountDetails}
+            type="text"
+            variant="standard"
+          >
+          </lightning-input>
+          <lightning-input
+            value={xeroAccountName}
+            name="xeroAccountName"
+            style="margin-left: 15px"
+            onchange={handleXeroAccountDetails}
+            type="text"
+            variant="standard"
+          >
+          </lightning-input>
+          <lightning-input
+            value={xeroAccountStreetAddress}
+            name="xeroAccountStreetAddress"
+            style="margin-left: 15px"
+            onchange={handleXeroAccountDetails}
+            type="text"
+            variant="standard"
+          >
+          </lightning-input>
+          <lightning-input
+            value={xeroAccountAddressCity}
+            name="xeroAccountAddressCity"
+            style="margin-left: 15px"
+            onchange={handleXeroAccountDetails}
+            type="text"
+            variant="standard"
+          >
+          </lightning-input>
+          <lightning-input
+            value={xeroAccountAddressState}
+            name="xeroAccountAddressState"
+            style="margin-left: 15px"
+            onchange={handleXeroAccountDetails}
+            type="text"
+            variant="standard"
+          >
+          </lightning-input>
+          <lightning-input
+            value={xeroAccountAddressPostalCode}
+            name="xeroAccountAddressPostalCode"
+            style="margin-left: 15px"
+            onchange={handleXeroAccountDetails}
+            type="text"
+            variant="standard"
+          >
+          </lightning-input>
+          <lightning-input
+            value={xeroAccountAddressCountry}
+            name="xeroAccountAddressCountry"
+            style="margin-left: 15px"
+            onchange={handleXeroAccountDetails}
+            type="text"
+            variant="standard"
+          >
+          </lightning-input>
+          <lightning-input
+            value={xeroAccountPhone}
+            name="xeroAccountPhone"
+            style="margin-left: 15px"
+            onchange={handleXeroAccountDetails}
+            type="text"
+            variant="standard"
+          >
+          </lightning-input>
+        </lightning-layout-item>
+      </lightning-layout>
+    </div>
+  </lightning-card>
+</template>
