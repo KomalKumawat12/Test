@@ -6,6 +6,7 @@
   @last modified by  : ChangeMe
 -->
 <template>
+<lightning-quick-action-panel>
     <lightning-card title="New XERO Invoice" icon-name="action:quote">
 
         <!-- Loading Spinner Template -->
@@ -61,7 +62,7 @@
                 </div>
                 <div class="slds-var-m-around_medium">
                     <h2> Create Invoice using Opportunity Products</h2>
-                    </br>
+                    </br> 
                     <label>
                         <lightning-input type="radio" label="Create Blank Invoice" data-id="BlankInvoice"
                             onclick={handleInvoiceTypeRadioChange}
@@ -245,12 +246,13 @@
                                     <tr key={item.id}>
                                         <td>
                                             <lightning-input type="search" data-id={item.id} value={item.Name}
-                                                onchange={handleChange} class="slds-truncate"></lightning-input>
+                                                onchange={handleChange} onblur={hideSearchList} class="slds-truncate"></lightning-input>
 
                                             <template if:true={isLoaded}>
                                                 <template if:true={item.isDropdownVisible}>
-                                                    <div class="searchList">
-                                                        <ul class="dropdown-list">
+                                                    <div class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" id="5"
+                                                         onmouseenter={handleMouseEnter} onmouseleave={handleMouseleave} role="listbox">
+                                                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
                                                             <div>
                                                                 <template for:each={filteredProducts} for:item="option">
                                                                     <li key={option.Id} data-id={option.Id}
@@ -261,33 +263,45 @@
                                                             </div>
                                                         </ul>
                                                     </div>
+                                                    <!-- <div class="searchList">
+                                                        <ul class="dropdown-list">
+                                                            <div>
+                                                                <template for:each={filteredProducts} for:item="option">
+                                                                    <li key={option.Id} data-id={option.Id}
+                                                                        onclick={handleSelectedProduct}>
+                                                                        {option.Name}
+                                                                    </li>
+                                                                </template>
+                                                            </div>
+                                                        </ul>
+                                                    </div> -->
                                                 </template>
                                             </template>
                                         </td>
                                         <td>
                                             <lightning-input data-id={item.id} value={item.Description}
-                                               data-name="Description" onchange={handleChange} class="slds-truncate"></lightning-input>
+                                               data-name="Description" class="slds-truncate"></lightning-input>
                                         </td>
                                         <td>
                                             <lightning-input type="number" data-id={item.id}
                                                 data-name="Quantity" value={item.Quantity}
-                                                onchange={handleChange} class=" slds-truncate"></lightning-input>
+                                                onchange={handleSpecificValueChange} class=" slds-truncate"></lightning-input>
                                         </td>
                                         <td>
                                             <lightning-input type="number" data-id={item.id} value={item.UnitPrice}
-                                               data-name="UnitPrice" onchange={handleChange} class=" slds-truncate"></lightning-input>
+                                               data-name="UnitPrice" class=" slds-truncate"></lightning-input>
                                         </td>
                                         <td>
                                             <lightning-input type="number" data-id={item.id} value={item.Discount}
-                                                data-name="Discount" onchange={handleChange} class=" slds-truncate"></lightning-input>
+                                                data-name="Discount" class=" slds-truncate"></lightning-input>
                                         </td>
                                         <td>
                                             <lightning-combobox data-id={item.id} value={item.AccountCode}
-                                                data-name="AccountCode" onchange={handleChange} options={accountCodeOptions} class="slds-truncate"></lightning-combobox>
+                                                data-name="AccountCode" onchange={handleSpecificValueChange} options={accountCodeOptions} class="slds-truncate"></lightning-combobox>
                                         </td>
                                         <td>
                                             <lightning-combobox data-id={item.id} value={item.TaxType}
-                                               data-name="TaxType" options={taxRateOptions} onchange={handleChange}></lightning-combobox>
+                                               data-name="TaxType" options={taxRateOptions}></lightning-combobox>
                                         </td>
                                         <!-- <td>
                                                     <lightning-combobox data-id={item.id} value={item.region}
@@ -340,4 +354,5 @@
             </div>
         </div>
     </lightning-card>
+    </lightning-quick-action-panel>
 </template>

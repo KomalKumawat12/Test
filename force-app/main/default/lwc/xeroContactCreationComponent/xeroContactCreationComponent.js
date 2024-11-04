@@ -4,12 +4,12 @@ import getAccountRelatedToOpportunity from "@salesforce/apex/CreateInvoiceContro
 
 export default class XeroContactCreationComponent extends LightningElement {
   @api accountdata;
-  @track contactFirstName = "";
-  @track contactLastName = "";
-  @track contactEmail = "";
+  @track xeroContactFirstName = "";
+  @track xeroContactLastName = "";
+  @track xeroContactEmail = "";
   @track xeroContactDetailsValue = false;
   @track contactPersons = [];
-  salesforceContactOptions = [];
+  @track salesforceContactOptions = [];
   FirstName;
   LastName;
   EmailAddress;
@@ -21,23 +21,26 @@ export default class XeroContactCreationComponent extends LightningElement {
   xeroAccountAddressCountry;
   xeroAccountAddressCity;
   xeroAccountPhone;
-  accountNumber;
-  accountName;
-  accountAddressCity;
-  accountAddressCountry;
-  accountAddressPostalCode;
-  accountAddressState;
-  accountPhone;
+  @track accountNumber;
+  @track accountName;
+  @track accountStreetAddress;
+  @track accountAddressCity;
+  @track accountAddressCountry;
+  @track accountAddressPostalCode;
+  @track accountAddressState;
+  @track accountPhone;
   addMoreContactPersonsButton = false;
   maxContactPersons = 5;
   salesforceContactInsertionValue = "";
   salesforceContactPersonOptions = [];
-  contactPersonsList = [];
+  @track contactPersonsList = [];
   addMoreContactPersonButtonDisabled = false;
   relatedContacts = new Map();
 
   // Fetch contacts when component is initialized
   connectedCallback() {
+    console.log("Inside child connected callback");
+    //this.fetchAccountRelatedToOpportunity();
     this.fetchContacts();
   }
 
@@ -123,63 +126,100 @@ export default class XeroContactCreationComponent extends LightningElement {
       "this.contactPersonsList::: ",
       JSON.stringify(this.contactPersonsList)
     );
-    if (event.target.name == "xeroAccountNumber") {
-      this.xeroAccountNumber = event.target.value;
-    } else if (event.target.name == "xeroAccountName") {
-      this.xeroAccountName = event.target.value;
-    } else if (event.target.name == "xeroAccountStreetAddress") {
-      this.xeroAccountStreetAddress = event.target.value;
-    } else if (event.target.name == "xeroAccountAddressCity") {
-      this.xeroAccountAddressCity = event.target.value;
-    } else if (event.target.name == "xeroAccountAddressState") {
-      this.xeroAccountAddressState = event.target.value;
-    } else if (event.target.name == "xeroAccountAddressPostalCode") {
-      this.xeroAccountAddressPostalCode = event.target.value;
-    } else if (event.target.name == "xeroAccountAddressCountry") {
-      this.xeroAccountAddressCountry = event.target.value;
-    } else if (event.target.name == "xeroAccountPhone") {
-      this.xeroAccountPhone = event.target.value;
+    if (event.target.dataset.name == "xeroAccountNumber") {
+      this.accountNumber = event.target.value;
+    } else if (event.target.dataset.name == "xeroAccountName") {
+      this.accountName = event.target.value;
+    } else if (event.target.dataset.name == "xeroAccountStreetAddress") {
+      this.accountStreetAddress = event.target.value;
+    } else if (event.target.dataset.name == "xeroAccountAddressCity") {
+      this.accountAddressCity = event.target.value;
+    } else if (event.target.dataset.name == "xeroAccountAddressState") {
+      this.accountAddressState = event.target.value;
+    } else if (event.target.dataset.name == "xeroAccountAddressPostalCode") {
+      this.accountAddressPostalCode = event.target.value;
+    } else if (event.target.dataset.name == "xeroAccountAddressCountry") {
+      this.accountAddressCountry = event.target.value;
+    } else if (event.target.dataset.name == "xeroAccountPhone") {
+      this.accountPhone = event.target.value;
     }
   }
 
-  @wire(getAccountRelatedToOpportunity, { accountId: "$accountdata" })
-  wiredContacts({ error, data }) {
-    console.log("accounts===== " + data);
-    console.log("accountId---- " + this.accountdata);
-    if (data) {
-      console.log("accountData====  " + JSON.stringify(data));
-      console.log("account ::: " + data[0].Name);
-      // Xero Account Details
-      this.xeroAccountNumber = data[0].AccountNumber;
-      this.xeroAccountName = data[0].Name;
-      this.xeroAccountStreetAddress = data[0].BillingStreet;
-      this.xeroAccountAddressCity = data[0].BillingCity;
-      this.xeroAccountAddressState = data[0].BillingState;
-      this.xeroAccountAddressCountry = data[0].BillingCountry;
-      this.xeroAccountAddressPostalCode = data[0].BillingPostalCode;
-      this.xeroAccountPhone = data[0].Phone;
+  // fetchAccountRelatedToOpportunity() {
+  //   getAccountRelatedToOpportunity({ accountId: this.accountdata })
+  //     .then((data) => {
+  //       if (data) {
+  //         console.log("accountData====  " + JSON.stringify(data));
+  //         console.log("account ::: " + data[0].Name);
+  //         // Xero Account Details
+  //         this.xeroAccountNumber = data[0].AccountNumber;
+  //         this.xeroAccountName = data[0].Name;
+  //         this.xeroAccountStreetAddress = data[0].BillingStreet;
+  //         this.xeroAccountAddressCity = data[0].BillingCity;
+  //         this.xeroAccountAddressState = data[0].BillingState;
+  //         this.xeroAccountAddressCountry = data[0].BillingCountry;
+  //         this.xeroAccountAddressPostalCode = data[0].BillingPostalCode;
+  //         this.xeroAccountPhone = data[0].Phone;
 
-      // Salesforce Account Details
-      this.accountNumber = data[0].AccountNumber;
-      this.accountName = data[0].Name;
-      this.accountStreetAddress = data[0].BillingStreet;
-      this.accountAddressCity = data[0].BillingCity;
-      this.accountAddressState = data[0].BillingState;
-      this.accountAddressCountry = data[0].BillingCountry;
-      this.accountAddressPostalCode = data[0].BillingPostalCode;
-      this.accountPhone = data[0].Phone;
-    } else if (error) {
-      this.error = error;
-    }
-  }
+  //         // Salesforce Account Details
+  //         this.accountNumber = data[0].AccountNumber;
+  //         this.accountName = data[0].Name;
+  //         this.accountStreetAddress = data[0].BillingStreet;
+  //         this.accountAddressCity = data[0].BillingCity;
+  //         this.accountAddressState = data[0].BillingState;
+  //         this.accountAddressCountry = data[0].BillingCountry;
+  //         this.accountAddressPostalCode = data[0].BillingPostalCode;
+  //         this.accountPhone = data[0].Phone;
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       if (error) {
+  //         this.error = error;
+  //       }
+  //     });
+  // }
+  // @wire(getAccountRelatedToOpportunity, { accountId: "$accountdata" })
+  // wiredContacts({ error, data }) {
+  //   console.log("accounts===== " + data);
+  //   console.log("accountId---- " + this.accountdata);
+  //   if (data) {
+  //     console.log("accountData====  " + JSON.stringify(data));
+  //     console.log("account ::: " + data[0].Name);
+  //     // Xero Account Details
+  //     this.xeroAccountNumber = data[0].AccountNumber;
+  //     this.xeroAccountName = data[0].Name;
+  //     this.xeroAccountStreetAddress = data[0].BillingStreet;
+  //     this.xeroAccountAddressCity = data[0].BillingCity;
+  //     this.xeroAccountAddressState = data[0].BillingState;
+  //     this.xeroAccountAddressCountry = data[0].BillingCountry;
+  //     this.xeroAccountAddressPostalCode = data[0].BillingPostalCode;
+  //     this.xeroAccountPhone = data[0].Phone;
+
+  //     // Salesforce Account Details
+  //     this.accountNumber = data[0].AccountNumber;
+  //     this.accountName = data[0].Name;
+  //     this.accountStreetAddress = data[0].BillingStreet;
+  //     this.accountAddressCity = data[0].BillingCity;
+  //     this.accountAddressState = data[0].BillingState;
+  //     this.accountAddressCountry = data[0].BillingCountry;
+  //     this.accountAddressPostalCode = data[0].BillingPostalCode;
+  //     this.accountPhone = data[0].Phone;
+  //   } else if (error) {
+  //     this.error = error;
+  //   }
+  // }
 
   handleContactDetailValues(event) {
-    if (event.target.name == "contactFirstName") {
-      this.contactFirstName = event.target.value;
-    } else if (event.target.name == "contactLastName") {
-      this.contactLastName = event.target.value;
-    } else if (event.target.name == "contactEmail") {
-      this.contactEmail = event.target.value;
+    console.log("handleContactDetail Values called");
+    if (event.target.dataset.name == "contactFirstName") {
+      this.xeroContactFirstName = event.target.value;
+      console.log("firstName changed");
+    } else if (event.target.dataset.name == "contactLastName") {
+      this.xeroContactLastName = event.target.value;
+      console.log("Last Name changed");
+    } else if (event.target.dataset.name == "contactEmail") {
+      this.xeroContactEmailAddress = event.target.value;
+      console.log("email address changed");
     }
   }
 

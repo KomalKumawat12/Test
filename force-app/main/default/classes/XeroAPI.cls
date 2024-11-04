@@ -23,7 +23,7 @@ public with sharing class XeroAPI {
             List<XeroContact> xeroContacts = (List<XeroContact>) JSON.deserialize(jsonSerialized, List<XeroContact>.class);
             System.debug('XeroContacts --- ' + xeroContacts[0]);
             
-            // Now serialise the response and reutrn
+            // Now serialise the response and reutrn	
             return xeroContacts[0];
         }
         else {
@@ -43,6 +43,8 @@ public with sharing class XeroAPI {
     public static List<XeroContact> getContacts() {
         
         String resourceName = 'Contacts';
+        
+        // String resourceName = 'Contacts/'
         
         // Callout to Xero to retrieve contacts
         HttpResponse response = XeroCalloutService.executeCallout('GET', resourceName); 

@@ -7,14 +7,14 @@
       >
         <lightning-layout-item size="4"> </lightning-layout-item>
         <lightning-layout-item size="4">
-          <center style="padding-top: 15px">
+          <div style="padding-top: 15px" class="slds-align_absolute-center">
             <strong>From Salesforce Contact</strong>
-          </center>
+          </div>
         </lightning-layout-item>
         <lightning-layout-item size="4">
-          <center style="padding-top: 15px">
+          <div style="padding-top: 15px" class="slds-align_absolute-center">
             <strong>New Xero Contact</strong>
-          </center>
+          </div>
         </lightning-layout-item>
       </lightning-layout>
       <div
@@ -58,8 +58,7 @@
           <lightning-layout-item size="4">
             <lightning-input
               value={xeroContactFirstName}
-              name="contactFirstName"
-              onchange={handleContactDetailValues}
+              data-name="contactFirstName"
               type="text"
               variant="standard"
               disabled="true"
@@ -67,8 +66,7 @@
             </lightning-input>
             <lightning-input
               value={xeroContactLastName}
-              name="contactLastName"
-              onchange={handleContactDetailValues}
+              data-name="contactLastName"
               type="text"
               variant="standard"
               disabled="true"
@@ -76,10 +74,8 @@
             </lightning-input>
             <lightning-input
               value={xeroContactEmailAddress}
-              name="contactEmail"
-              placeholder="Enter Email Address"
-              onchange={handleContactDetailValues}
-              type="text"
+              data-name="contactEmail"
+              type="email"
               variant="standard"
               style="margin-bottom: 10px"
               disabled="true"
@@ -90,6 +86,7 @@
           <lightning-layout-item size="4">
             <lightning-input
               value={xeroContactFirstName}
+              data-name="contactFirstName"
               onchange={handleContactDetailValues}
               type="text"
               variant="standard"
@@ -98,6 +95,7 @@
             </lightning-input>
             <lightning-input
               value={xeroContactLastName}
+              data-name="contactLastName"
               onchange={handleContactDetailValues}
               type="text"
               variant="standard"
@@ -106,8 +104,10 @@
             </lightning-input>
             <lightning-input
               value={xeroContactEmailAddress}
+              data-name="contactEmail"
+              placeholder="Please enter a valid email address"
               onchange={handleContactDetailValues}
-              type="text"
+              type="email"
               variant="standard"
               style="margin-left: 15px; margin-bottom: 10px"
             >
@@ -122,7 +122,7 @@
           class="slds-border_bottom slds-border_top slds-p-horizontal_small"
           style="padding-bottom: 10px"
         >
-          <lightning-layout key={xeroContact.Id}>
+          <lightning-layout>
             <lightning-layout-item size="4" style="margin-top: 10px">
               <lightning-button
                 variant="destructive"
@@ -218,7 +218,6 @@
           <lightning-input
             value={accountNumber}
             name="AccountNumber"
-            onchange={handleAccountDetails}
             type="text"
             variant="standard"
             disabled="true"
@@ -226,7 +225,6 @@
           </lightning-input>
           <lightning-input
             value={accountName}
-            onchange={handleAccountDetails}
             type="text"
             variant="standard"
             disabled="true"
@@ -234,7 +232,6 @@
           </lightning-input>
           <lightning-input
             value={accountStreetAddress}
-            onchange={handleAccountDetails}
             type="text"
             variant="standard"
             disabled="true"
@@ -242,7 +239,6 @@
           </lightning-input>
           <lightning-input
             value={accountAddressCity}
-            onchange={handleAccountDetails}
             type="text"
             variant="standard"
             disabled="true"
@@ -250,7 +246,6 @@
           </lightning-input>
           <lightning-input
             value={accountAddressState}
-            onchange={handleAccountDetails}
             type="text"
             variant="standard"
             disabled="true"
@@ -258,7 +253,6 @@
           </lightning-input>
           <lightning-input
             value={accountAddressPostalCode}
-            onchange={handleAccountDetails}
             type="text"
             variant="standard"
             disabled="true"
@@ -266,7 +260,6 @@
           </lightning-input>
           <lightning-input
             value={accountAddressCountry}
-            onchange={handleAccountDetails}
             type="text"
             variant="standard"
             disabled="true"
@@ -274,7 +267,6 @@
           </lightning-input>
           <lightning-input
             value={accountPhone}
-            onchange={handleAccountDetails}
             type="text"
             variant="standard"
             disabled="true"
@@ -284,73 +276,73 @@
 
         <lightning-layout-item size="4">
           <lightning-input
-            value={xeroAccountNumber}
+            value={accountNumber}
             style="margin-left: 15px"
-            name="xeroAccountNumber"
+            data-name="xeroAccountNumber"
             onchange={handleXeroAccountDetails}
             type="text"
             variant="standard"
           >
           </lightning-input>
           <lightning-input
-            value={xeroAccountName}
-            name="xeroAccountName"
-            style="margin-left: 15px"
+            value={accountName}
+            data-name="xeroAccountName"
             onchange={handleXeroAccountDetails}
+            style="margin-left: 15px"
             type="text"
             variant="standard"
           >
           </lightning-input>
           <lightning-input
-            value={xeroAccountStreetAddress}
-            name="xeroAccountStreetAddress"
-            style="margin-left: 15px"
+            value={accountStreetAddress}
+            data-name="xeroAccountStreetAddress"
             onchange={handleXeroAccountDetails}
+            style="margin-left: 15px"
             type="text"
             variant="standard"
           >
           </lightning-input>
           <lightning-input
-            value={xeroAccountAddressCity}
-            name="xeroAccountAddressCity"
-            style="margin-left: 15px"
+            value={accountAddressCity}
+            data-name="xeroAccountAddressCity"
             onchange={handleXeroAccountDetails}
+            style="margin-left: 15px"
             type="text"
             variant="standard"
           >
           </lightning-input>
           <lightning-input
-            value={xeroAccountAddressState}
-            name="xeroAccountAddressState"
-            style="margin-left: 15px"
+            value={accountAddressState}
+            data-name="xeroAccountAddressState"
             onchange={handleXeroAccountDetails}
+            style="margin-left: 15px"
             type="text"
             variant="standard"
           >
           </lightning-input>
           <lightning-input
-            value={xeroAccountAddressPostalCode}
-            name="xeroAccountAddressPostalCode"
-            style="margin-left: 15px"
+            value={accountAddressPostalCode}
+            data-name="xeroAccountAddressPostalCode"
             onchange={handleXeroAccountDetails}
+            style="margin-left: 15px"
             type="text"
             variant="standard"
           >
           </lightning-input>
           <lightning-input
-            value={xeroAccountAddressCountry}
-            name="xeroAccountAddressCountry"
-            style="margin-left: 15px"
+            value={accountAddressCountry}
+            data-name="xeroAccountAddressCountry"
             onchange={handleXeroAccountDetails}
+            style="margin-left: 15px"
             type="text"
             variant="standard"
           >
           </lightning-input>
           <lightning-input
-            value={xeroAccountPhone}
-            name="xeroAccountPhone"
-            style="margin-left: 15px"
+            value={accountPhone}
+            data-name="xeroAccountPhone"
             onchange={handleXeroAccountDetails}
+            style="margin-left: 15px"
             type="text"
             variant="standard"
           >

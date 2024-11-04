@@ -1,5 +1,11 @@
+/*
+* Author : Komal Kumawat and Sagar Anand
+* Description: This class is used to handle all the methods related to lwc component.
+* Last Modified By:  
+*/
+
 public with sharing class CreateInvoiceController {
-  public static String ContactWrapperValue;
+  //public static String ContactWrapperValue;
 
   @AuraEnabled(cacheable=true)
   public static String getOppRelatedProduct(String oppId) {
@@ -59,13 +65,13 @@ public with sharing class CreateInvoiceController {
     return JSON.serialize(oppInvoiceList);
   }
 
-  @AuraEnabled(cacheable=true)
-  public static String showContactWrapperData(Id opportunityId) {
-    //    String st = getExistingInvoiceRelatedToOpportunity(opportunityId);
-    //     System.debug('Test ====');
+  // @AuraEnabled(cacheable=true)
+  // public static String showContactWrapperData(Id opportunityId) {
+  //   //    String st = getExistingInvoiceRelatedToOpportunity(opportunityId);
+  //   //     System.debug('Test ====');
 
-    return ContactWrapperValue;
-  }
+  //   return ContactWrapperValue;
+  // }
 
   @AuraEnabled
   public static Map<String, String> createXeroContact(
@@ -89,42 +95,6 @@ public with sharing class CreateInvoiceController {
       'SFContactId' => SFContactId
     };
   }
-
-  // @future(callout=true)
-  // public static void createContactInXero(
-  //   String firstName,
-  //   String lastName,
-  //   String email
-  // ) {
-  //   String reqbody =
-  //     '{' +
-  //     '\"Name\":\"' +
-  //     firstName +
-  //     lastName +
-  //     '\",\"FirstName\":\"' +
-  //     firstName +
-  //     '\",\"LastName\":\"' +
-  //     lastName +
-  //     '\",\"EmailAddress\":\"' +
-  //     email +
-  //     '\",\"ContactNumber\":\"ID1000"}';
-
-  //   HttpRequest request = new HttpRequest();
-  //   request.setMethod('POST');
-  //   request.setEndpoint(
-  //     'callout:XeroIntegrationCredentials/' +
-  //     'api.xro/2.0/Contacts?summarizeErrors=false'
-  //   );
-
-  //   request.setHeader('Accept', 'application/json');
-  //   request.setHeader('xero-tenant-id', 'e87024fe-fb07-4c44-ad00-791ad1aaa907');
-  //   request.setBody(reqbody);
-  //   HttpResponse response = new HttpResponse();
-  //   response = new Http().send(request);
-
-  //   System.debug(' \n ' + response.getStatusCode());
-  //   System.debug(' \n ' + response.getBody());
-  // }
 
   @AuraEnabled
   public static String createInvoiceRecord(
@@ -373,7 +343,7 @@ public with sharing class CreateInvoiceController {
     ];
   }
 
-  @AuraEnabled
+  @AuraEnabled(cacheable=false)
   public static List<Contact> contactRecordsAssociatedWithAccount(
     String accountId
   ) {
@@ -384,7 +354,7 @@ public with sharing class CreateInvoiceController {
     ];
   }
 
-  @Auraenabled(cacheable=true)
+  @Auraenabled(cacheable=false)
   public static List<Account> getAccountRelatedToOpportunity(String accountId) {
     System.debug('Inside Account');
     System.debug('accountId==== ' + accountId);
@@ -430,7 +400,6 @@ public with sharing class CreateInvoiceController {
     String accountName,
     String accountNumber
   ) {
-    system.debug('getXeroContacts called');
     List<Xero_Contact__c> fetchedXeroContact = [
       SELECT Id, Account_Number__c, Company_Name__c
       FROM Xero_Contact__c
@@ -438,7 +407,8 @@ public with sharing class CreateInvoiceController {
         Account_Number__c = :accountNumber
         AND Company_Name__c = :accountName
     ];
-    if (fetchedXeroContact.size() != 0) {
+
+    if (fetchedXeroContact.size() > 0) {
       return true;
     } else {
       return false;

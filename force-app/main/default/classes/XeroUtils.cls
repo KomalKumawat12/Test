@@ -6,7 +6,7 @@
 public with sharing class XeroUtils {
     
     /**
-    *   @author Ben Edwards (ben@edwards.nz)
+    *   @author 
     *   @description Method to take the full JSON response and just return the object portion. Eg. The Contact and Invoice portion only
     *   @return JSON String with only specific object data
     **/
@@ -20,7 +20,7 @@ public with sharing class XeroUtils {
     }
 
     /**
-    *   @author Ben Edwards (ben@edwards.nz)
+    *   @author
     *   @description Process 401 responses, which reutrn in a different format that other errors
     **/
     public static String process401Error (String responseBody) {

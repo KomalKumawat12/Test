@@ -5,6 +5,8 @@
 * CHANGE LOG
 **/
 public class XeroInvoice {
+    public String Id;
+    public String ProviderName;  
     public String Type; //ACCREC
     public String InvoiceID; //94b8a8d6-31fd-4d8c-8791-d1a2a7dfe898
     public String InvoiceNumber; //asdsdasd
@@ -39,6 +41,7 @@ public class XeroInvoice {
     public List<CreditNote> CreditNotes;
     public List<PrePayment> Prepayments;
     public List<OverPayment> Overpayments;
+    public List<InvoicePaymentService> InvoicePaymentServices;
     
     public List<XeroValidationError> ValidationErrors;
     
@@ -58,6 +61,10 @@ public class XeroInvoice {
     }
     
     public class OverPayment {
+    }
+    
+    public class InvoicePaymentService{
+        
     }
     
     public class LineItem {
@@ -126,7 +133,7 @@ public class XeroInvoice {
         String serialized = JSON.serialize(this, true);
         
         // Replace the _x with the correct format
-        //serialized = serialized.replace('"Date_x"', '"Date"');
+        serialized = serialized.replace('"Date_x"', '"Date"');
         
         return serialized;
     }

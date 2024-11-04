@@ -285,10 +285,7 @@ public class CreateXeroRecords {
             xeroInvoiceRecord.Amount_Paid__c = invoiceData.AmountPaid;
             //xeroInvoiceRecord.Fully_Paid_On_Date__c = 
 
-            if(invoiceData.Attachments != null){
-
-                
-            }
+            if(invoiceData.)
 
             upsertXeroInvoices.add(xeroInvoiceRecord);
         }
@@ -298,6 +295,4 @@ public class CreateXeroRecords {
         }
         
     }
-
-    
 }

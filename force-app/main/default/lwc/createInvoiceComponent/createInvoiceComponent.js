@@ -13,7 +13,10 @@ import getXeroBrandingThemeTemplate from "@salesforce/apex/XeroAPI.getXeroBrandi
 import getXeroTaxRates from "@salesforce/apex/XeroAPI.getXeroTaxRates";
 import getXeroContacts from "@salesforce/apex/CreateInvoiceController.getXeroContacts";
 import getProducts from "@salesforce/apex/CreateInvoiceController.getProducts";
-import getXeroAccounts from "@salesforce/apex/XeroAPI.getXeroAccounts"
+import getXeroAccounts from "@salesforce/apex/XeroAPI.getXeroAccounts";
+import errorToastMsg from "@salesforce/label/c.Error_Toast_Event";
+import successToastMsg from "@salesforce/label/c.Success_Toast_Message";
+import { CloseActionScreenEvent } from "lightning/actions";
 
 // Fetch the Opportunity Record Data
 const FIELDS = [
@@ -37,7 +40,7 @@ export default class CreateInvoiceComponent extends NavigationMixin(
   oppAccountId;
   currentStep = "1";
   opportunityProductPage = false;
-  isLoaded = false;
+  @track isLoaded = false;
   contactRecordPage = false;
   invoiceItems = [];
   primaryContactEmail;
@@ -121,6 +124,7 @@ export default class CreateInvoiceComponent extends NavigationMixin(
       this.oppAccountName = "Error fetching Account name";
     }
     this.getOppProducts();
+    console.log("Error toast message --- " + errorToastMsg);
   }
 
   //get existing invoice related to corresponding opportunity if any
@@ -140,6 +144,10 @@ export default class CreateInvoiceComponent extends NavigationMixin(
     if (data) {
       console.log("getXeroContactRelatedToContact==== " + JSON.stringify(data));
       this.xeroContactRelatedToAccount = data;
+      console.log(
+        "this.xerocontactRelatedToAccount --- " +
+          this.xeroContactRelatedToAccount
+      );
     }
   }
 
@@ -193,8 +201,8 @@ export default class CreateInvoiceComponent extends NavigationMixin(
   }
 
   @wire(getXeroAccounts)
-  wiredXeroAccountsValue({error,data}){
-    if(data){
+  wiredXeroAccountsValue({ error, data }) {
+    if (data) {
       this.accountCodeOptions = Object.keys(data).map((key) => {
         return {
           label: key,
@@ -202,29 +210,11 @@ export default class CreateInvoiceComponent extends NavigationMixin(
         };
       });
       console.log(
-        "this.accountCodeOptions ::::::: " + JSON.stringify(this.accountCodeOptions)
+        "this.accountCodeOptions ::::::: " +
+          JSON.stringify(this.accountCodeOptions)
       );
     }
   }
-
-  // handleFirstStepBar() {
-  //   this.firstPage = true;
-  //   this.secondPage = false;
-  //   this.thirdPage = false;
-  //   this.currentStep = "1";
-  // }
-  // handleSecondStepBar() {
-  //   this.secondPage = true;
-  //   this.firstPage = false;
-  //   this.thirdPage = false;
-  //   this.currentStep = "2";
-  // }
-  // handleThirdStepBar() {
-  //   this.thirdPage = true;
-  //   this.firstPage = false;
-  //   this.secondPage = false;
-  //   this.currentStep = "3";
-  // }
 
   handleStepBarChange(event) {
     let dataId = event.target.dataset.id;
@@ -246,36 +236,6 @@ export default class CreateInvoiceComponent extends NavigationMixin(
     }
   }
 
-  // handleBlankInvoiceRadioChange(event) {
-  //   this.isRadioBlankInvoiceChecked = event.target.checked;
-  //   this.isRadioOppProductChecked = false;
-  //   this.hideNextButton = false;
-  //   const newId = this.invoiceItems.length;
-  //   console.log("newId handleBlankInvoiceRadioChange :::: " + newId);
-  //   this.invoiceItems = [
-  //     {
-  //       id: newId,
-  //       Name: "",
-  //       Description: "",
-  //       Quantity: 1,
-  //       UnitAmount: 0,
-  //       Discount: 0,
-  //       AccountCode: "",
-  //       TaxType: "",
-  //       //region: '',
-  //       LineAmount: 0,
-  //       isDropdownVisible: false
-  //     }
-  //   ];
-  // }
-  // handleOpportunityProductsButton(event) {
-  //   this.isRadioOppProductChecked = event.target.checked;
-  //   this.isRadioBlankInvoiceChecked = false;
-  //   this.opportunityProductPage = true;
-  //   this.hideNextButton = false;
-  //   this.getOppProducts();
-  // }
-
   handleInvoiceTypeRadioChange(event) {
     let dataId = event.target.dataset.id;
     if (dataId === "BlankInvoice") {
@@ -290,7 +250,7 @@ export default class CreateInvoiceComponent extends NavigationMixin(
           Name: "",
           Description: "",
           Quantity: 1,
-          UnitAmount: 0,
+          UnitPrice: 0,
           Discount: 0,
           AccountCode: "",
           TaxType: "",
@@ -307,59 +267,6 @@ export default class CreateInvoiceComponent extends NavigationMixin(
       this.getOppProducts();
     }
   }
-
-  handleClickOnPrevious() {
-    this.firstPage = true;
-    this.secondPage = false;
-    this.isRadioCreateContactChecked = false;
-    this.isRadioExistingChecked = false;
-    this.contactRecordPage = false;
-    this.currentStep = "1";
-  }
-  // handleNewContactRadioChange(event) {
-  //   this.isRadioCreateContactChecked = event.target.checked;
-  //   this.isRadioExistingChecked = false;
-  //   this.contactRecordPage = true;
-  //   this.buttonPage = false;
-  //   this.hideNextButton = false;
-  //   console.alert("isRadioCreateContactChecked:::" + event.target.checked);
-  //   console.log("isRadioExistingChecked::::" + event.target.unchecked);
-  // }
-  // handleExistingContactRadioChangeButton(event) {
-  //   this.isRadioCreateContactChecked = false;
-  //   this.contactRecordPage = false;
-  //   console.log("handleExistingContactRadioChangeButton called");
-  //   console.log(
-  //     "xeroContactRelatedToAccount --- " +
-  //       JSON.stringify(this.xeroContactRelatedToAccount)
-  //   );
-  //   this.primaryContactFirstName =
-  //     this.xeroContactRelatedToAccount[0]["First_Name__c"];
-  //   this.primaryContactLastName =
-  //     this.xeroContactRelatedToAccount[0]["Last_Name__c"];
-  //   this.primaryContactEmail =
-  //     this.xeroContactRelatedToAccount[0]["Email_Address__c"];
-  //   this.xeroContactId =
-  //     this.xeroContactRelatedToAccount[0]["Xero_Contact_Id__c"];
-  //   this.SFContactId = this.xeroContactRelatedToAccount[0]["Id"];
-  //   console.log(
-  //     "PrimaryContDetailsFName for existing -- " + this.primaryContactFirstName
-  //   );
-  //   console.log(
-  //     "PrimaryContDetailsLName for existing-- " + this.primaryContactLastName
-  //   );
-  //   console.log(
-  //     "PrimaryContDetailsEmail for existing -- " + this.primaryContactEmail
-  //   );
-
-  //   this.isRadioExistingChecked = event.target.checked;
-  //   this.isRadioCreateContactChecked = false;
-  //   this.hideNextButton = false;
-  //   console.alert("isRadioExistingChecked::::" + this.isRadioExistingChecked);
-  //   console.log(
-  //     "isRadioCreateContactChecked:::" + this.isRadioCreateContactChecked
-  //   );
-  // }
 
   handleContactTypeRadioChange(event) {
     let dataId = event.target.dataset.id;
@@ -414,8 +321,6 @@ export default class CreateInvoiceComponent extends NavigationMixin(
       this.firstPage = true;
       this.secondPage = false;
       this.thirdPage = false;
-      // this.isRadioCreateContactChecked = false;
-      // this.isRadioExistingChecked = false;
       this.hidePreviousButton = true;
       this.hideNextButton = false;
       this.currentStep = "1";
@@ -425,6 +330,7 @@ export default class CreateInvoiceComponent extends NavigationMixin(
       this.secondPage = true;
       this.currentStep = "2";
       this.nextButton = "Next";
+      this.hideNextButton = false;
     }
   }
 
@@ -463,6 +369,7 @@ export default class CreateInvoiceComponent extends NavigationMixin(
   getProductList() {
     getProducts({ searchKey: this.searchKey }).then((data) => {
       this.filteredProducts = data; // Store the fetched data
+      console.log("data ----- " + JSON.stringify(data));
 
       try {
         data.forEach((element) => {
@@ -471,18 +378,48 @@ export default class CreateInvoiceComponent extends NavigationMixin(
           currentProduct.Id = element.Id;
           currentProduct.Description = element.Product2.Description;
           // Komal Changes
-          currentProduct.UnitAmount = element.UnitPrice;
+          currentProduct.UnitPrice = element.UnitPrice;
+          console.log("currentProduct ---- " + JSON.stringify(currentProduct));
+          console.log("elementId ----- " + element.Id);
           this.relatedProducts.set(element.Id, currentProduct);
         });
         console.log("This.relatedProducts :::: ", this.relatedProducts);
-        // console.log('Contacts:::::: '+JSON.stringify(this.relatedContacts));
+        console.log("Contacts:::::: " + JSON.stringify(this.relatedContacts));
       } catch (error) {
         console.log("Error", error);
       }
     });
   }
 
+  dropDownInFocus = false;
+  handleBlur() {
+    if (!this.dropDownInFocus) {
+      this.closeDropbox();
+    }
+  }
+  handleMouseleave() {
+    this.dropDownInFocus = false;
+  }
+  handleMouseEnter() {
+    this.dropDownInFocus = true;
+  }
+  closeDropbox() {
+    let sldsCombobox = this.template.querySelector(".slds-combobox");
+    sldsCombobox.classList.remove("slds-is-open");
+  }
+
+  hideSearchList(event) {
+    console.log(this.searchedItemId);
+    // this.invoiceItems.forEach((element) => {
+    //   if (element.id == this.searchedItemId) {
+    //     element.isDropdownVisible = false;
+    //   }
+    // });
+    this.isLoaded = false;
+  }
+
   handleSelectedProduct(event) {
+    console.log("handle Selected Product run");
     this.isLoaded = false;
     console.log("selected item id -- " + this.searchedItemId);
     this.searchedProduct = event.target.innerText;
@@ -502,7 +439,7 @@ export default class CreateInvoiceComponent extends NavigationMixin(
           (element.Name = selectedProductDetails["Name"]),
           (element.Description = selectedProductDetails["Description"]),
           (element.Quantity = 1),
-          (element.UnitAmount = selectedProductDetails["UnitPrice"]),
+          (element.UnitPrice = selectedProductDetails["UnitPrice"]),
           (element.Discount = 0),
           (element.AccountCode = ""),
           (element.TaxType = ""),
@@ -512,7 +449,9 @@ export default class CreateInvoiceComponent extends NavigationMixin(
       console.log(element);
     });
     this.isLoaded = true;
-    console.log("this.invoiceItems ---" + JSON.stringify(this.invoiceItems));
+    console.log(
+      "this.invoiceItems :: 515 ---" + JSON.stringify(this.invoiceItems)
+    );
   }
 
   navigateToInvoiceRecord(event) {
@@ -548,10 +487,8 @@ export default class CreateInvoiceComponent extends NavigationMixin(
 
   //TODO : Implement Close screen event
   handleClickOnCancel(event) {
-    var url = window.location.href;
-    var value = url.substr(0, url.lastIndexOf("/") + 1);
-    window.history.back();
-    return false;
+    console.log("cancelled");
+    this.dispatchEvent(new CloseActionScreenEvent());
   }
 
   //Calls on the item name change
@@ -578,7 +515,36 @@ export default class CreateInvoiceComponent extends NavigationMixin(
     this.getProductList();
   }
 
-  //Calls on the Add button t
+  handleSpecificValueChange(event) {
+    console.log("specific field changed.");
+    const dataId = event.target.dataset.id;
+    const dataName = event.target.dataset.name;
+    console.log("data Id --- " + dataId);
+    console.log("data Name ---- " + dataName);
+    console.log(
+      "invoiceItems before changes ----" + JSON.stringify(this.invoiceItems)
+    );
+    this.invoiceItems.forEach((element) => {
+      console.log("for loop run");
+      console.log("element.Id ---" + element.id);
+      if (element.id == dataId) {
+        if (dataName == "Quantity") {
+          console.log("element.quantity before --- " + element.Quantity);
+          element.Quantity = event.target.value;
+          console.log("event.target.value --- " + event.target.value);
+          console.log("element.quantity after change --- " + element.Quantity);
+        } else if (dataName == "AccountCode") {
+          element.AccountCode = event.target.value;
+        }
+      }
+    });
+    console.log(
+      "InvoiceItems after specific value change --- " +
+        JSON.stringify(this.invoiceItems)
+    );
+  }
+
+  //Calls on the Add button
   handleAddItem() {
     console.log(
       "this.invoiceItems :::559 :::" + JSON.stringify(this.invoiceItems)
@@ -593,7 +559,7 @@ export default class CreateInvoiceComponent extends NavigationMixin(
         Name: "",
         Description: "",
         Quantity: 1,
-        UnitAmount: 0,
+        UnitPrice: 0,
         Discount: 0,
         AccountCode: "",
         TaxType: "",
@@ -611,7 +577,11 @@ export default class CreateInvoiceComponent extends NavigationMixin(
         this.firstPage = false;
         this.secondPage = true;
         this.currentStep = "2";
-        this.hideNextButton = true;
+        if (this.isRadioExistingChecked || this.isRadioCreateContactChecked) {
+          this.hideNextButton = false;
+        } else {
+          this.hideNextButton = true;
+        }
       } else if (this.thirdPage == false && this.secondPage == true) {
         this.firstPage = false;
         this.secondPage = false;
@@ -695,25 +665,20 @@ export default class CreateInvoiceComponent extends NavigationMixin(
       );
       if (invoiceResult === "Succeed") {
         const toastEvent = new ShowToastEvent({
-          message: "Invoice Genereted Successfully!",
+          message: successToastMsg,
           variant: "Success"
         });
         this.dispatchEvent(toastEvent);
+        this.dispatchEvent(new CloseActionScreenEvent());
       } else if (invoiceResult === "Failed") {
         const toastEvent = new ShowToastEvent({
-          message: "Unable to generate Invoice!",
+          message: errorToastMsg,
           variant: "Error"
         });
         this.dispatchEvent(toastEvent);
+        this.dispatchEvent(new CloseActionScreenEvent());
       }
     });
-    // .catch((error) => {
-    //   const toastEvent = new ShowToastEvent({
-    //     message: "Xero Invoice Creation Unsuccessful!",
-    //     variant: "Error"
-    //   });
-    //   this.dispatchEvent(toastEvent);
-    // });
   }
 
   //Calls on Delete button
@@ -753,29 +718,10 @@ export default class CreateInvoiceComponent extends NavigationMixin(
     this.primaryContactLastName = this.xeroContactDetails["LastName"];
     this.primaryContactEmail = this.xeroContactDetails["EmailAddress"];
 
-    console.log(
-      "PrimaryContDetailsFName for blank -- " + this.primaryContactFirstName
-    );
-    console.log(
-      "PrimaryContDetailsLName for blank-- " + this.primaryContactLastName
-    );
-    console.log(
-      "PrimaryContDetailsEmail for blank -- " + this.primaryContactEmail
-    );
-    console.log(
-      'this.xeroContactDetails["accountName"] ---' +
-        this.xeroContactDetails["accountName"]
-    );
-    console.log(
-      'this.xeroContactDetails["accountNumber"] ---' +
-        this.xeroContactDetails["accountNumber"]
-    );
-
     getXeroContacts({
-      accountName: this.xeroContactDetails["accountName"],
-      accountNumber: this.xeroContactDetails["accountNumber"]
+      accountName: this.xeroContactDetails["Name"],
+      accountNumber: this.xeroContactDetails["AccountNumber"]
     }).then((result) => {
-      console.log("result " + result);
       if (result == true) {
         const toastEvent = new ShowToastEvent({
           message:
